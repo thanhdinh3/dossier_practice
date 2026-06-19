@@ -56,7 +56,17 @@ model Listing {
   status          String   @default("ACTIVE")
   createdAt       DateTime @default(now())
 
+  // --- PostGIS geospatial columns (auto-maintained by a DB trigger, see
+  // prisma/postgis.sql). Declared as Unsupported so `prisma db push` keeps
+  // them; never written from app code. ---
+  // Employer hiring point.
+  pointGeog       Unsupported("geography(Point, 4326)")?    @map("point_geog")
+  // Candidate desired region polygon.
+  regionGeog      Unsupported("geography(Geometry, 4326)")? @map("region_geog")
+
   @@index([ownerId])
+  // Speeds up the opposite-role candidate scan in the feed query.
+  @@index([role, status])
   @@map("listings")
 }
 

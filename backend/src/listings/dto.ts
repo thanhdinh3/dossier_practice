@@ -56,7 +56,7 @@ export class CreateListingDto {
 
   @IsOptional()
   @IsNumber()
-  @Min(5)
+  @Min(1)
   @Max(200)
   radiusKm?: number;
 
@@ -126,7 +126,7 @@ export class UpdateListingDto {
 
   @IsOptional()
   @IsNumber()
-  @Min(5)
+  @Min(1)
   @Max(200)
   radiusKm?: number;
 

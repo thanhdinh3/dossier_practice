@@ -194,9 +194,9 @@ export function CreateListing({
           <label>Search radius: {radiusKm} km</label>
           <input
             type="range"
-            min={5}
+            min={1}
             max={200}
-            step={5}
+            step={1}
             value={radiusKm}
             onChange={(e) => setRadiusKm(Number(e.target.value))}
           />

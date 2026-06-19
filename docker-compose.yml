@@ -1,6 +1,7 @@
 services:
   postgres:
-    image: postgres:16-alpine
+    # PostGIS (bundles PostgreSQL 16) — needed for the geospatial feed matching.
+    image: postgis/postgis:16-3.4
     container_name: seeky-postgres
     restart: unless-stopped
     environment:

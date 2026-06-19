@@ -9,7 +9,10 @@
     "start:dev": "nest start --watch",
     "start:prod": "node dist/main.js",
     "prisma:generate": "prisma generate",
-    "prisma:push": "prisma db push"
+    "prisma:push": "prisma db push",
+    "db:extension": "docker exec -i seeky-postgres psql -U seeky -d seeky -c \"CREATE EXTENSION IF NOT EXISTS postgis;\"",
+    "db:postgis": "docker exec -i seeky-postgres psql -U seeky -d seeky < prisma/postgis.sql",
+    "db:setup": "npm run prisma:generate && npm run db:extension && npm run prisma:push && npm run db:postgis"
   },
   "dependencies": {
     "@nestjs/common": "^10.4.4",
