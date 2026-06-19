@@ -1,0 +1,74 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  EMPLOYER
+  CANDIDATE
+}
+
+enum SwipeDirection {
+  LEFT
+  RIGHT
+}
+
+model User {
+  id          String    @id @default(uuid())
+  email       String    @unique
+  password    String // plain text for the demo only — never do this in production
+  role        Role
+  displayName String
+  listings    Listing[]
+  createdAt   DateTime  @default(now())
+
+  @@map("users")
+}
+
+model Listing {
+  id              String   @id @default(uuid())
+  owner           User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  ownerId         String
+  role            Role
+
+  // Shared criteria
+  title           String
+  fieldOfActivity String
+  contractType    String
+  ageMin          Int      @default(18)
+  ageMax          Int      @default(65)
+
+  // Employer side: a specific point + radius
+  point           Json?
+  radiusKm        Float?
+
+  // Candidate side: a region/area (polygon)
+  cityLabel       String?
+  cityCenter      Json?
+  cityPolygon     Json?
+  contact         Json?
+  consent         Boolean  @default(false)
+
+  status          String   @default("ACTIVE")
+  createdAt       DateTime @default(now())
+
+  @@index([ownerId])
+  @@map("listings")
+}
+
+model Swipe {
+  id        String         @id @default(uuid())
+  swiperId  String
+  listingId String
+  direction SwipeDirection
+  createdAt DateTime       @default(now())
+
+  @@unique([swiperId, listingId])
+  @@index([swiperId])
+  @@index([listingId])
+  @@map("swipes")
+}
