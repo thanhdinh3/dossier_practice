@@ -77,6 +77,22 @@ export function Feed({ user }: { user: AuthUser }) {
               </div>
             )}
 
+            {(l.owner || l.contact) && (
+              <div className="muted" style={{ marginTop: 8, fontSize: 13 }}>
+                {l.owner && (
+                  <div>
+                    👤 {l.owner.displayName} · {l.owner.email}
+                  </div>
+                )}
+                {l.contact && (
+                  <div style={{ marginTop: 2 }}>
+                    ☎️ {l.contact.firstName} {l.contact.lastName} ·{' '}
+                    {l.contact.email} · {l.contact.phone}
+                  </div>
+                )}
+              </div>
+            )}
+
             {showEmployerCard && l.point ? (
               <>
                 <div className="muted" style={{ marginTop: 6 }}>

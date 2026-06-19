@@ -16,7 +16,11 @@ interface FeedRow {
   cityLabel: string | null;
   cityCenter: Prisma.JsonValue;
   cityPolygon: Prisma.JsonValue;
+  contact: Prisma.JsonValue;
   createdAt: Date;
+  ownerId: string;
+  ownerDisplayName: string;
+  ownerEmail: string;
   matchedWith: string[];
   matchCount: number;
   sameField: boolean;
@@ -111,12 +115,16 @@ export class FeedService {
       )
       SELECT c.id, c.role, c.title, c."fieldOfActivity", c."contractType",
              c."ageMin", c."ageMax", c.point, c."radiusKm",
-             c."cityLabel", c."cityCenter", c."cityPolygon", c."createdAt",
+             c."cityLabel", c."cityCenter", c."cityPolygon", c.contact,
+             c."createdAt", c."ownerId",
+             o."displayName" AS "ownerDisplayName",
+             o.email         AS "ownerEmail",
              agg.matched_with AS "matchedWith",
              agg.match_count  AS "matchCount",
              agg.same_field   AS "sameField"
       FROM agg
       JOIN listings c ON c.id = agg.cid
+      JOIN users o ON o.id = c."ownerId"
       LEFT JOIN swipes s ON s."listingId" = c.id AND s."swiperId" = ${user.id}
       WHERE s.id IS NULL
       ${cursorCond}
@@ -127,6 +135,11 @@ export class FeedService {
 
     const items = rows.map((r) => ({
       ...this.publicListing(r),
+      owner: {
+        id: r.ownerId,
+        displayName: r.ownerDisplayName,
+        email: r.ownerEmail,
+      },
       matchedWithListingIds: r.matchedWith,
     }));
 
@@ -182,8 +195,9 @@ export class FeedService {
     return { ok: true, id: result.id };
   }
 
-  // Employers viewing candidate cards do NOT see contact until "swipe right"
-  // (subscription gate in the real product). Demo: hide contact in the feed.
+  // DEMO: show everything, including candidate contact. In the real product
+  // contact is gated behind "swipe right" (subscription) — re-add that gate
+  // here before going to production.
   private publicListing(
     l: Pick<
       FeedRow,
@@ -199,6 +213,7 @@ export class FeedService {
       | 'cityLabel'
       | 'cityCenter'
       | 'cityPolygon'
+      | 'contact'
     >,
   ) {
     return {
@@ -214,6 +229,7 @@ export class FeedService {
       cityLabel: l.cityLabel,
       cityCenter: l.cityCenter,
       cityPolygon: l.cityPolygon,
+      contact: l.contact,
     };
   }
 }

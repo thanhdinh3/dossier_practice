@@ -47,7 +47,14 @@ export interface Listing {
   cityCenter?: LatLng | null;
   cityPolygon?: GeoJsonGeometry | null;
   contact?: Contact | null;
+  owner?: ListingOwner;
   matchedWithListingIds?: string[];
+}
+
+export interface ListingOwner {
+  id: string;
+  displayName: string;
+  email: string;
 }
 
 export interface Contact {
